@@ -1,0 +1,7 @@
+9/4: 
+abstract machine: the meaning of a program in a high level language
+	-who defines the operation of a abstract machine? Old farts. 
+real machine: the meaning of a program executed on real Hardware
+The life of a program: 
+Brain codes -> High level language -> compiler -> machine instructions -> 
+processor -> meaning
