@@ -14,3 +14,6 @@ Compilers think about MEANING of your program...how do we avoid the undefined
 behavior...
 
 How do you debug a program that is generating undefined behavior? 
+
+Dynamically allocated objects: can outlive the function they were created in
+	-they last for the entire time between main and free
