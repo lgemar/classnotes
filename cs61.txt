@@ -17,3 +17,10 @@ How do you debug a program that is generating undefined behavior?
 
 Dynamically allocated objects: can outlive the function they were created in
 	-they last for the entire time between main and free
+	
+Compiler fixes the location of global variables, but stack and heap addresses
+are changing rapidly...making it harder to hack into your computer!
+
+| globals -------- heap ->           <-stack | locals                 | 
+
+Operating system ensures that read-only variable cannot be modified. 
