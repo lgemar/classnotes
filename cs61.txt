@@ -4,4 +4,13 @@ abstract machine: the meaning of a program in a high level language
 real machine: the meaning of a program executed on real Hardware
 The life of a program: 
 Brain codes -> High level language -> compiler -> machine instructions -> 
-processor -> meaning
+processor(CPU + memory + disk + screen) -> meaning
+
+...Sometime a program can have "undefined behavior". The compiler can find 
+undefined behavior in a program...It's possible to write programs that have 
+no meaning at all...what the hell is the compiler doing when it optimizes...
+
+Compilers think about MEANING of your program...how do we avoid the undefined
+behavior...
+
+How do you debug a program that is generating undefined behavior? 
