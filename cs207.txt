@@ -1,3 +1,89 @@
+9/8:
+Review the contract from 9/5.
+If the implementation obeys the contract, then the user should be happy no matter
+the implementation. 
+
+Invariants: (expls. preconditions and postconditions)
+-> true statement at some point in the code
+@pre
+  -> true @ function entry
+  -> contstrain the user to the inputs that we want
+  -> if not satisfied we could...
+	1. return error
+	2. violate @posts
+	3. How do we know that the conditions have not been satisfied?
+		-> Assertions are checked invariants
+		-> exple: assert( mid >= low && mid < high)
+	4. Anything
+		-> crash
+@post
+  -> True @ function exit
+  -> Constrain the implementation
+...I can change the implementation, but I CANT change the preconditions and 
+postconditions...
+
+@assertions are checked invariants...sometimes not always possible
+  -> you can remove these at compile so they have no run-time overhead
+
+Actual implementation:
+
+int bin_search(const float* a, int low, int high, float v) 
+{
+	--high; 
+	while(low <= high) 
+	{
+		int mid = low + (high - low) / 2; 
+		if(v < a[mid]) // When the compiler sees this "less than" it searches for a operator<
+			high = mid - 1; 
+		else if (a[mid] < v)
+			low = mid + 1;
+		else
+			return mid;
+	}
+	return -1;
+}
+
+
+Limitations to our algorithm: 
+  1.) Entire array, no subranges (fixed)
+  2.) only float
+  3.) Only ascending order
+  4.) Only searches arrays
+
+Fix problem #2: 
+	template <class T> //C++ Templates: allow us to use parametric (variable) polymorphism (forms)
+	int bin_search(const T* a, int low, int high, T v)
+Now I can define...
+double* a_d = ... ;
+bin_search(a_d, ... );
+float* a_f = ... ;
+bin_search(a_f, ... )
+
+We can define our own types in C! Here is an example:
+struct MyFloat {
+	float v;
+};
+
+// This has a special meaning to the compiler...finds this as being a < operator
+bool operator<(MyFloat a, MyFloat b) {
+	return a v < b v;
+}
+
+(only difference between Struct and Class: Struct defaults to everything being public; 
+class defaults to everything being private) 
+
+What is a Type?
+	-> representation
+	-> Abstract value
+	-> Operations
+	-> Exple: MyFloat
+		-> Representation: float
+		-> Abstract value: float
+		-> Operations: operation<, operation>
+
+Now: My constraints are a bit complex. How can I simplify them?
+
+
 9/5: 
 Documentation: a contract between the user and the implementer
 
@@ -7,17 +93,22 @@ int bin_search(float* a, int n, float v) //no idea what this function is doing..
 /** Binary search
   * Searches an array for a value using binary search.
   * @param[in] a The array to search
-  * @param[in] n The size of @a a.
-  * @param[in] v The value to search for. 
+  * @param[in] low, high The range of @a a to search, [low, high)
+  * @param[in] v The value to search for.
+9/8-->  * @tparam type T is comparable: there exists a bool operator< (T, T) //We wrote this to only need one
+  * returns An index into @a a or -1
   * 
-  * @pre @n n is <= size(a) --> this is an abstract contractual agreement
-  * @pre @a for all i, j 0 <= i < j < n, a[i] <= a[j]
-  * @returns idx such that (a[idx] == v && 0 <= idx < n) or 
-                 (idx == -1 && there does not exist i, 0 <= i < n, a[i] == v)
-  * operates in O(log n) operations.
+  * @pre 0 <= @a low <= @a high <= size(@a a) -> abstract contractual agreement
+  //* @pre @a for all i, j low <= i < j < high, a[i] <= a[j] (WHAT DOES THIS MEAN FOR TWO Ts)
+9/8-->  * @pre @a for all i, j low <= i < j < high, !(a[j] < a[i])
+  //* @returns idx such that either (a[idx] == v && low <= idx < high) or (NO IDEA WHAT == MEANS)
+                 (idx == -1 && there does not exist i, low <= i < high, a[i] == v)
+9/8-->  * @returns idx such that either (!(a[idx] < v) and !(a[idx] > v) && low <= idx < high) or
+                 (idx == -1 && there does not exist i, low <= i < high, a[i] == v)
+  * operates in O(log (high - low)) operations.
 
 // the "const" promises that none of the values in memory will be changed
-int bin_search(const float* a, int n, float v);
+int bin_search(const float* a, int low, int high, float v);
 
 Ways for improvement of binary search:
 1.) Subranges -> low, high
