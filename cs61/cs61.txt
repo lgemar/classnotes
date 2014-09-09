@@ -1,3 +1,20 @@
+9/8 -> Section notes: 
+MY LAPTOP:
+git add FILE // local file system -> staging area
+git reset FILE // remove from staging area
+git commit -a //automatically adds and commits files that were added in a previous commit
+git commit //takes a snapshot of your local repository
+
+CODE.SEAS = remote repository (e.g. "origin")
+git push <remote> <branch>
+git pull <remote> <branch>
+
+USEFUL COMMANDS:
+git status //displays a list of files you've changed
+git diff //view any differences between your repository and the latest commit
+git log //list of all your commits (--graph --oneline --branches --decorate --all)
+git push <remote-name> <branch-on-remote>
+
 9/4: 
 abstract machine: the meaning of a program in a high level language
 	-who defines the operation of a abstract machine? Old farts. 
