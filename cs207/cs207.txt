@@ -1,3 +1,73 @@
+// The Graph has the responsibility of determining how to store points
+// You can add / delete anything inside of the Graph class (for the pset)
+class Graph {
+	Node add_node(Point p);
+	Note get_node(int i);
+
+	Edge add_edge(Node a, Node b);
+	Edge get_edge(int i);
+
+	private:
+		vector<Point> points_;
+};
+
+class Node {
+	public:
+		// The ampersand ensures that the point is returned by reference, not copy
+		Point& position() {
+			return g->points[uid];
+		}
+	private:
+		Graph* g_; // 8 bytes
+		int uid; // 4 bytes
+		friend class Graph;
+}
+
+Graph g;
+
+class Edge {
+	Node a;
+	Node b;
+}
+
+Back to binary search function....
+We wanted to generalize the binary search for a type that contains a less than
+operator.
+
+template <class T>
+// Adding "const" to v ensures that we will use v and definitely not change it
+int bin_search(const T* a, int low, int high, const T& v)
+
+Turns out that our "contract" is bordering on unreadable. It's getting too
+complicated and we may want to work out a simpler way. Let's resummarize our 
+approach to the binary search function.
+	-> If v is contained in a, then we return first element not smaller than v.
+	-> If v is not in a, then we return -1.
+		-> Optionally: we could return the last mid.
+		-> a[result] == v? If it's true, then v is in a.
+			-> vi, low <= i < result, a[i] < v
+			-> vi, result <= i < high, a[i] >= v
+
+Let's write out the cleaner specification:
+/** Find the first value in array that is not less than some value.
+ * 
+ * @tparam T is comparable: it supports the "less than" operator
+ * @pre 0 <= low <= high <= size(a)
+ * @pre for all i, j, low <= i < j < high, !(a[j] < a[i])
+ * @returns The position of the first element not < v
+ * @post for all i, low <= i <= result, a[i] < v
+ * @post for all i, result <= i < high, !(a[i] < v)
+**/
+template <class T>
+int lower_bound(const T* a, int low, int high, const T& v)
+int bin_search(const T* a, int low, int high, const T& v) {
+	int idx = lower_bound(...); 
+	if (!(a[idx] < v) && !(v < a[idx]))
+		return -1
+	return idx;
+}
+
+
 9/8:
 Review the contract from 9/5.
 If the implementation obeys the contract, then the user should be happy no matter
