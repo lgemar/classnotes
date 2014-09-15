@@ -1,3 +1,92 @@
+9/15: 
+NO BINARY SEARCH! 
+
+/** Find the minimum element in a std::vector.
+ * 
+ **/
+
+Should we return a T or an idx?
+T -> Why? python, idx requires lookup
+idx -> Gets T & position, handles 0 sized containers (return -1)
+
+template <class T>
+int min(const std::vector<T>& v) {
+	if (v.size == 0) { 
+		return -1;
+	}
+	T m = v[0];
+	int mk = 0;
+	for (int k = 1; k < v.size(); ++k) {
+		if (v[k] < m) {
+			m = v[k];
+			mk = k;
+		}
+	}
+	return mk;
+}
+
+I want my implementation to work on any kind of container!
+template <class Container>
+int min(const Container& v) {
+	if (v.size == 0) { 
+		return -1;
+	}
+	auto m = v[0];
+	int mk = 0;
+	// O(v.size()) for a vector and O(v.size()^2)
+	for (int k = 1; k < v.size(); ++k) {
+		if (v[k] < m) {
+			m = v[k];
+			mk = k;
+		}
+	}
+	return mk;
+}
+
+Let's write a linked list quickly: 
+template <class T>
+class list {
+	list_element* head;	
+	class list_element {
+		T val_;
+		list_element* next_;
+	}
+	int size() const { 
+		return size_;
+	}
+	// This indexing takes 0(i) time!!
+	T& operator[](unsigned i) {
+		list_element* current = head;
+		for (; i != 0; --i)
+			current = current->next;
+		return current->val_;
+	}
+}
+
+WE SHOULD BE ABLE TO DO THIS OPERATION IN ORDER N TIME!
+We can't use subscripting operators anymore...
+
+Write down some of our assumptions here:
+
+-> Run through each position, denoted as k above
+-> Compare positions (k < v.size())
+-> Dereference a position (v[k])
+-> Assignment of positions
+
+... Big player here is a "position"...We need to abstract
+on position...maybe a pointer?
+template <class T>
+T* min(const std::vector<T>& v) {
+	T* first = v.begin();
+	T* end = v.end(); // This should be one past the end
+	if (first == end)
+		return NULL;
+
+	.... on Wed.
+}
+
+
+9/10:
 // The Graph has the responsibility of determining how to store points
 // You can add / delete anything inside of the Graph class (for the pset)
 class Graph {

@@ -1,3 +1,42 @@
+9/11 -> Lecture Notes:
+/* Integer arithmetic: b - a -> normal math result
+ * Pointer Arithmetic: b - a with type T* -> 
+ * 	(uintptr_t b - uintptr_a) / sizeof(T*)
+ * You can only subtract pointers that are of the same type.
+ */
+
+ Alignment of T:
+ A such that every object of type T has address multiple of A.
+
+ type    size    alignment
+ char	 1 		 1
+ int	 4	     4
+ 
+This is especially important for structures. A structure like the 
+following: 
+typedef struct mem {
+	int a;
+	char b;
+	int c;
+} mem;
+will actually allocate 12 bytes.
+
+Let's say your struct looks like this:
+typedef struct mem2 {
+	int a;
+	char b;
+}
+This struct will have to be of size 8.
+The alignment is the least common multiple of the alignments
+of the components. The size has to be a multiple of the alignment.
+
+Facts about alignment and structures:
+1.sizeof(T) is a multiple of alignof(T). And the reason of this is
+array layout.
+2. Alignof(struct M) is the max{Alignof(T)} (true because each
+alignment is a power of 2) for all 
+components T.
+
 9/8 -> Section notes: 
 MY LAPTOP:
 git add FILE // local file system -> staging area
