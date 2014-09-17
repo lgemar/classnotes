@@ -1,3 +1,94 @@
+9/17:
+// We decided that a pointer is a more powerful indicator of position than index
+template <class T>
+T* min(const std:vector<T>& a) {
+	T* first = a.begin(); // 0 index
+	T* end = a.end(); // index a.size()
+	// Last is pointing to one past the end of the array, a[a.size()] is undefined
+	if (first == last) return last;
+	T* m = first;
+	for (++first; first != last; ++first) {
+		if (*first < *m)
+			m = first;
+	}
+	return m;
+}
+
+The punch line!!
+How can we deal with a subsequence? Pass in a first and a last.
+What operations are we performing on out positions, T*? 
+1. comparing (p == q)
+2. assigning (p = q)
+3. incremementing (++p)
+4. dereference (*p)
+----> These define the iterator concept
+
+T*'s represent a position, so we should be able to handle the operations of 
+position that are specified above. Let's replace the T*'s with IT, iterators.
+
+/*
+ * @pre [first, last) is a valid range of elements of type T
+ * /
+IT min(IT first, IT last) {
+}
+
+struct list_it {
+	list_elem* curr;
+	list_it& operator=(const list_it&)=default;
+	bool operator==(const list_it& other) {
+		return curr == other.curr;
+	}
+	list_it& operator++() {
+		curr = curr->next_;
+		return *this;
+	}
+	T& operator*() {
+		return curr->val_;
+	}
+}
+
+template <class T>
+class list {
+	struct list_elem {
+		T val_;
+		list_elem* head_;
+	};
+	list_elem* head_;
+	unsigned size_;
+	list_it begin() {
+		return list_it(head_);
+	}
+	list_it end() {
+		// Cannot increment or dereference the null pointer
+		return list_it(nullptr);	
+	}
+}
+
+Validity:
+->[first, last) is a valid iterator range -> last is reachable by first
+->last is iterator
+->first may be invalid
+
+// Let's work on a copy function -- this one can copy from an array to a list!! oh my!
+template <class ItI, ItO>
+ItO copy(ItI begin, ItI end, ItI, ItO out) {
+	for(; begin!=end, ++begin,++out) {
+		*out = *begin;
+	}
+}
+
+struct counting_iterator {
+	int n;
+	operator==( ... ) {
+		return n == other.n;
+	}
+	operator++() {
+		++n;
+	}
+	operator*() {
+		return n;
+	}
+}
 9/15: 
 NO BINARY SEARCH! 
 
