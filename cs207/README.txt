@@ -1,1 +1,1 @@
-This folder is hosted on github and contains my classnotes for cs207.
+Now I'm going to make some changes to the README in order to test git.
