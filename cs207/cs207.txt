@@ -40,6 +40,64 @@ struct iterator_traits<T*> {
 	using value_type = T;
 };
 
+TYPE:
+--> Representation
+--> Abstract Values
+--> Operations/Semantics
+
+REPRESENTATION:
+When we define Graph, we can have different representations that represent the same thing
+class Graph {
+	private:
+		struct node_data {
+			Point p_;
+		}
+
+		struct edge_data {
+			Node n1_;
+			Node n2_;
+		}
+
+		vector<node_data> nodes_;
+		vector<edge_data> edges_;
+};
+
+class Node {
+	private:
+		Graph* g_;
+		uid_type uid_;
+};
+
+ABSTRACT VALUE: something that MAPS our internal representation to abstract concepts/data
+ABSTRACT FUNCTION: Obj Representation => Abstract Value
+Abstractly, when we talk about a Graph, what do we define? 
+Abstract value of graph: Set of nodes and edges
+Graph = (Nodes, Edges)
+N = [n0, n1, ..., nm]; m = node_.size() - 1;
+Abstract value of a node: a position
+Abstract function: ni = <g_->nodes_[uid_].p_, uid_>
+Abstract value of an edge: its two nodes
+E = {e0, e1, ..., ek}, k = edges_.size() - 1;
+Abstract function (maps representation to its value):
+ei = <g_->edges[uid_].n1_, ... >
+
+Now there is something that's not documented...the RULES about our representation: 
+--> What value can the representation take? We need representation invariants
+	--> can edges_ be [(n0, n1), (n1, n0), (n1, n1)]?
+		--> These representations don't fit abstract idea about what an edge is
+		--> The graph is undirected and all edges must be distinct
+
+REPRESENTATION INVARIANT: these are conditions on the representation in order for it to be valid
+-> Maps an internal representation and its value to bool; these are RULES
+-> Representation invariants are implied preconditions and postconditions to every member function!
+-> Representation invariants can be broked between @pre and @post, in the middle of member funcs
+
+Proposal: For all representations of the edges_ the uid_ of node1 is strictly less than uid_ of node2
+More formally: for all i, edges_[i].n1.uid_ < edges_[i].n2.uid_
+We can still have duplicates: vector<edge_data> edges_ => [(n0, n1), (n0, n1)]
+
+Assignment: Read through HW1 and think about all the operations you need to perform
+
 9/17:
 // We decided that a pointer is a more powerful indicator of position than index
 template <class T>
