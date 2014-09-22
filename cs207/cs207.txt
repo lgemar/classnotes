@@ -1,3 +1,45 @@
+9/22:
+template
+
+template <IT, Pred>
+class filter_iterator {
+	public:
+		// typedef typename std::iterator_traits<IT>::value_type value_type;
+		typedef typename IT::value_type value_type;
+
+What type does filter iterator return? When I dereference, what type should I get? 
+-->*IT
+
+All iterators have...
+--> a value_type: the type that I get when I dereference the iterator
+--> a pointer_type: pointer to the type I get when I dereference
+--> a reference_type
+--> a difference_type
+--> a iterator_tag: defines what type of iterator I am
+
+All our filter iterator has to do is grab the value type of the iterator; see second
+line in the class iterator, the one that is not commented out.
+
+Adapter pattern: provide a uniform interface for two things that don't necessarily have 
+the same interface. Now the filter_iterator can be used on top of any user-defined type
+or just a simple pointer.
+
+// define iterator traits
+namespace std {
+	template <IT>
+	struct iterator_traits {
+		using value_type = typename IT::value_type;	
+		...
+	}
+}
+
+// This is a template specialization; handle pointers the same way that we handle user define
+// iterators
+template<T>
+struct iterator_traits<T*> {
+	using value_type = T;
+};
+
 9/17:
 // We decided that a pointer is a more powerful indicator of position than index
 template <class T>
