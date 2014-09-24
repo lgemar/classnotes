@@ -1,3 +1,90 @@
+9/24: 
+
+Think back to edge_data and nodes: 
+struct edge_data {
+Node n1_;
+Node n2_;
+};
+
+Abstract functions (AF): 
+AF(Graph) = (N, E) ((Nodes and Edges))
+AF(N) = [n0, n1, ... , nm]; m = noes_.size()
+ni = <g_->nodes_[i].p_, i>
+AF(E) = {e0, e1, e2, ... , ek}
+AF: E = { { e.n1, e.n2} | e is in e_ } 
+
+Representation Invariants (RI):
+k == e_.size(); for all i, e_[i].n1.uid < e_[i].n2.uid (Undirected self-edges)
+
+How can we consolodate? Get rid of the pointers!
+struct edge_data {
+	uid_type uid1_;
+	uid_type uid2_;
+};
+
+AF: E = { {g_->node(uid1), g_node(uid2)} | for all e in e_}
+Simpler AF: E = { {ne.uid1_, ne.uid2_} | e in e_ }
+
+Is this a bad representation for the operations you want to do? 
+-> has_edge
+-> add_edge
+-> edge(i)
+-> num_edges
+-> iteration
+
+Let's look at a Flat structure: 
+-> has_edge: O(num_edges)
+-> add_edge: O(num_edges)
+-> edge(i) : O(1)
+-> num_edges: O(1)
+-> iteration: O(1)
+-> incident: O(E)
+
+Let's look at a Map structure: 
+-> has_edge: O(log E) // E is num_edges
+-> add_edge: O(log E)
+-> edge(i): O(E)
+-> num_edges: O(1)
+-> iteration: O(1)
+-> incident: O(E)
+
+Let's look at a adjacency Matrix: 
+	0	1	2	3
+0	0	1	0	1
+1	1	0	1	1
+2	0	1	0	1
+3	1	1	1	0
+
+-> has_edge: O(1)
+-> add_edge: O(1)
+-> edge(i): O(N^2)
+-> num_edges: O(1) / O(N^2)
+-> iteration: O(N^2 / E)
+-> incident: O(N)
+
+Let's write out the represenation invariants for the Matrix: 
+vector<vector<bool>> e_;
+AF: E = { {ni, nj} | i < j && e[i][j] == true}
+RI: e_.size == m, where m is the number of nodes; for all e_[i].size==m
+
+Could also have written this out as a flat matrix: 
+vector<bool> e2_;
+e2_[m*i + j]
+
+Try an adjacency list: 
+0: 1,3
+1: 0, 2, 3
+2: 1,3
+3: 0,1,2
+
+Speed of an adjacency list: 
+-> has_edge: O(d), O(log d) for sorted // bounded by largest degree of a node, usually small
+-> add_edge: O(d), O(d) for sorted as well
+-> edge(i): O(E), has to go through entire list to determine ith edge
+-> num_edges: O(1), with a counter
+-> iteration: O(1)
+-> incident_edges: O(d)
+
 9/22:
 template
 
