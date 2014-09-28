@@ -1,3 +1,100 @@
+9/26: 
+Why are representation invariants useful? 
+template <It, Pred>
+filter_iterator {
+	private:
+		// Representation Invariant (RI): (it_==end_) || p(*it_)
+		It it_, end_;
+		Pred p_;
+	/** This will allow us to keep the RI at beginning and END of funcs
+	  * the RIs don't need to be true before this function
+	  * Only PRIVATE member functions don't need to have the RIs as 
+	  * @pres and @posts
+	  */	
+	void fix() {
+		/** Advances it_ until RI 
+		 * @post is that the RI is satisfied
+		 */
+		while (it_ != end_ && !p(*it)) {
+			++it_; // when this returns, the RI MUST be true
+		}
+	}
+};
+
+Which functions could return without a valid invariant? 
+--> ++ definitely could return unfixed so we need to call fix
+--> The RI must be true after the CONSTRUCTOR as well
+
+op==(const filter_iterator<It, Pred> other) {
+	return (return it_ == other.it_) // not necessary: p_ == other.p_;
+}
+
+What are we trying to express with a filter iterator abstraction? 
+--> position inside of a range such that it skips values that
+	don't satisfy the predicate
+--> When are two filter iterator's positions the same?
+--> --> The positions of two filter iterator's must satisfy the pred.
+--> --> When should the positions compare equal?
+		return it_ == other.it_;
+
+auto first = make_filtered(graph.node_begin(), graph.node_end(), 
+							pred);
+auto last = make_filtered(graph.node_end(), graph.node_end(), pred);
+graph.add_nodes(first, last, node_map);
+
+ADJACENCY LIST:
+std::vector<std::vector<uid_type>> adj_;
+0: 1, 3, 4
+1: ....
+2: 
+3: 
+.
+.
+.
+n: 1, 3, 5, 7 ...
+
+/** If any of these are not true there is a bug in our code */
+AF(E) = E = { {ni, nj} | ni is in adjacency list of nj and vis versa }
+RI adj_.size() == num_nodes(); // this is appear in add notes
+if j is in adj_[i] then i must be in adj_[j] // apear in add edge
+
+/** Must be powerful enough to return an edge */
+EdgeIterator {
+	inner_iterator it_;
+	uid_type uid1;
+	graph* g_;
+}
+AF: Represents a position to Edge(graph_, uid1, *it)
+RI: it_ <= adj_[uid1].end() //Note: end == graph_.size();
+--> g_ != nullptr
+--> uid1 < g_-> adj_.size();
+--> uid1 < *it_; // uid1 < uid2 b/c we have upper triangular matrix
+--> --> the strength of these ^^ is written from weakest to strongest
+
+/** How do we write a fix function? 
+ * The @posts are the invariants! Crazy! 
+ */
+void fix() {
+	assert(g != nullptr);
+	while (uid1_ < g_->adj_.size()) {
+		while (it_ < g_->adj_[uid1].end()) {
+			if (uid1_ < *it)
+				return;
+			else
+				++it_;
+		}
+		++uid1_; it_ = g_ (... little fuzzy about this...)
+	}
+}
+
+/** RI for a node */
+Node {
+	Graph* g_;
+	uid_type uid_;
+}
+RI: g_ != nullptr;
+--> uid_ < g.num_nodes();
+
 9/24: 
 
 Think back to edge_data and nodes: 
