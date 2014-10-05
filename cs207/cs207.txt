@@ -1,3 +1,80 @@
+10/3:
+??Let's talk about GRAPH and REMOVE NODE / EDGE??
+==> Excercise 2 served to remind us of invalid objects
+	==> Erase function should invalidate the iterator it is operating on
+	==> If you were to try to use that iterator the program has undefined
+		behavior. 
+
+==> Remove Node: concentrate on the specification for remove node
+	==> If we invalidate any objects we NEED to know about that
+	==> Can we write this without invalidating any iterators
+	==> We still have to uphold this: g.node(i).index() == i;
+		==> // Restrictions we've placed on graph
+			g.add_node(p0); 
+			g.add_node(p1);
+			n0 = g.node(0);
+			n1 = g.node(1); // uid_ == 1
+			g.remove_node(n0);
+			// n0.index() is undefined
+			assert(n1.index() == 0); // true
+			assert(n1.position() == p1); // true
+			assert(n1 == g.node(0)); // uid_ == 1?
+		==> Why can't we use a map??
+			==> // Node implementation
+				Node {
+					Graph* g_;
+					uid_type uid_;
+				}
+			==> // Adding to node_data in Graph
+				// This allows for uid ==> index mapping
+				Graph {
+					node_data {
+						Point p_;
+						node_value_type v_;
+						idx_type idx_;
+					}
+
+					// Indexed by a node uid_;
+					vector<node_data> nodes_;
+				}
+		==> Do we need to go the other way: index ==> uid_ ?
+			==> Yes: n1 == g.node(0);
+			==> uid_ <==> index is what we need
+		==> How can we map index ==> uid_?
+			==> // Probably will require another data structure
+				vector<uid_type> i2u_; // indexed by node index and returns uid_
+
+==> Rewrite the Abstraction Function and the Invariants on Node
+	==> AF(G) = <N, E>
+		N = [n0, n1, ... , nm-1] m = i2u_.size();
+		ni = <nodes_[i2u_[i]].p_, nodes_[i2u_[i]].v_, ... . idx_>
+	==> AF(ni) = <graph_->nodes_[uid_].p_, ... (same as above ^^ ) >
+	==> RI(G) = For all i in [0, i2u_.size), i == nodes_[i2u_[i]].idx_;
+	==> We need to be able to tell from the uid_ whether a node is valid
+		==> // Informal version
+			RI(ni) = if uid_ is in graph_->i2u_, then node is valid
+		==> // More formal
+			RI(ni) = uid_ is in g_->i2u_; uid_ == g_->id2u_[g_->nodes_[uid_].idx_]
+		==> What does this tell you about the rest of the implementation? 
+			==> The above implies...
+			==> uid_ < g_->nodes_.size() && uid_ >= 0;
+			==> g_->nodes_[uid_].idx_ < g_->i2u_.size();
+	==> Inside add_node and remove_node we need to satisfy the specified conditions
+		==> remove_nodes will not modify node_.size()
+		==> nodes_ is growing with the nodes we have added in our lifetime !!Problem!!
+			==> If we didn't want node to grow unbounded...
+			==> // Nice solution to this problem
+				// Indexed by node index
+				vector<node_data> nodes_;
+				Node {
+					Graph* g_;
+					uid_type uid_; // What if we stored the index here? 
+				}
+				// Lookup values? Now u2i_ is growing without bound
+				AF(ni) = <graph_->nodes_[g_->u2i_[uid_]].p_, ... >
+/** */
+remove_node( );
+
 10/1: 
 ??What is an ABSTRACTION FUNCTION??
 ==> An abstraction function is a mapping from the space of concrete values
