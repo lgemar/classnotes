@@ -30,6 +30,105 @@ class Point {
 ==> What are the representation invariants on the concrete representation? 
 	==> If the invariants are non-trivial, then the concrete representation should
 		be kept private and figure out how to defend them.
+
+??CREATING POWERFUL CONCEPTS??
+When we start using iterators we can get some messy code: 
+
+std::vector<int> v
+for( auto it = v.begin(); it != v.end(); ++it); { // always use pre-increment
+	auto& element = *it;
+	.... ; // This is way too much boilerplate
+}
+
+
+??Pre-incremements and post-increments??
+==> obj operator++() -> This is a pre-increment
+	==> operator++() {
+			++it; 
+			return *this;
+		}
+==> obj operator++(int) -> This is a post-increment
+	==> operator++(int) {
+			obj copy = *this;
+			++it;
+			return copy;
+		}
+==> T* i = ... ;
+	T* a = ++i; -> a is equal to the incremented i
+	T* b = i++; -> b is equal to the original i
+
+??Can we learn something from Python??
+// We just want to iterate over all the elements
+for (auto& elem : v) {
+}
+
+??RANGE??
+The above code should work for any v that has a Range concept
+==> RANGE
+	==> iterator begin()
+	==> iterator end()
+
+??How can we improve on this for nodes and edges??
+for (auto& n : graph) -> nodes?
+for (auto& e : graph) -> edges?
+
+class Graph {
+	RangeEdge edges;
+	// Does this stuff need to be inside of Graph? 
+	struct RangeEdge {
+		edge_it begin() {
+			return Graph.edge_begin();
+		}
+		edge_it end();
+	};
+}
+... We want to define ranges outside of a Graph
+
+??What would be a nicer syntax: Use ADAPTER PATTERN??
+==> We want to ADAPT a graph to be a range
+==> Erik suggests that inside of Graph we could provide a Range
+	type of edges and a Range type of Nodes
+==> Here is a better syntax: 
+	==> for (auto& n : nodes(graph));
+	==> for (auto& e : edges(graph));
+
+/** This function has one sole purpose: 
+ * It's purpose is to change graph_.node_begin() and graph_.node_end()
+ * 	to just be begin() and end() so that it follows the interface of the 
+ *	Range
+ */
+NodeRange<Graph<v>> nodes(const Graph<v>& g) {
+	return {g}; // shorthand constructor: {g} = NodeRange<Graph<v>> (g);
+}
+
+template<G>
+struct NodeRange {
+	const G& g_;
+	node_iterator begin () {
+		return g_.node_begin();
+	}
+	node_iterator end () {
+		return g_.node_end();
+	}
+}
+
+??What are the DESIGN PATTERNS that we have been using so far??
+==> DESIGN PATTERNS
+	==> Proxy -> small representation accesses actual values externally
+	==> Iterator -> iterate over any kind of data structure
+	==> Adapter / Concept -> specifying the concepts that types must specify
+	==> Templates / Generic
+
+??Think about propogating invariants??
+min(Iter begin, Iter end), ... )
+Anytime we write a function that takes a begin and end iterator...
+@pre [begin, end) define a valid range -> This is a precondition
+This is a design flaw. There is a push to change begin, end syntax to 
+use exclusively Ranges. If a precondition is propogating throughout
+all of your code then it is probably an invariant that should be 
+upheld by a class. 
+
+
 9/29: 
 ROBUST SOFTWARE: In C++ it's possible to make programs that won't fail
 Force = Mass * Acceleration
