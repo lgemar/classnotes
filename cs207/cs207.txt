@@ -1,3 +1,138 @@
+10/1: 
+??What is an ABSTRACTION FUNCTION??
+==> An abstraction function is a mapping from the space of concrete values
+	to the abstract space that the user is dealing with. 
+==> I see the abstraction function as the function that takes a class as an 
+	input and uses the data members and functions of the class to display to 
+	the user the state of the class in readable form. 
+
+??What is the ABSTRACTION FUNCTION for a POINT??
+==> AF(Point) = <p.x, p.y, p.z>;
+==> RI(Point) = True;
+	==> There is no representation invariant that the point class is
+		Trying to protect
+	==> This drives Chris up the wall
+	==> Because the representation invariant is always true there is 
+		no reason for the data members to be private
+	==> The class should keep track of the invariant for the user
+
+??What is the class implementation??
+class Point {
+	public: 
+		double x, y, z;
+};
+
+??What do you think about when you write a class??
+==> What am I trying to represent with this class? What operations will I 
+	provide to a user? 
+==> How do I represent this class?
+	==> And is that representation sufficient to represent the abstract values?
+==> What are the representation invariants on the concrete representation? 
+	==> If the invariants are non-trivial, then the concrete representation should
+		be kept private and figure out how to defend them.
+9/29: 
+ROBUST SOFTWARE: In C++ it's possible to make programs that won't fail
+Force = Mass * Acceleration
+Energy = Mass * Velocity^2
+
+We want to ensure that an expression like this, 
+Mass = Mass * Acceleration, 
+is impossible. One way we might be able to ensure that this is the case 
+is if we use types. So let's define a type for all of our units: 
+
+struct Mass {
+	double v_;
+};
+
+struct Acceleration {
+	double v_;
+};
+
+struct Force {
+	double v_;
+};
+
+Force operator*(const Mass& m, const Acceleration& a) {
+	return Force(m.v_ * a.v_);
+}
+
+Now if the user tries to write something like, 
+Mass m2 = m1 * a; //WRONG
+
+Now let's work on other operators: 
+Mass * Mass
+Force * Force
+... this is getting to be a lot. 
+
+Let's lighten the coding load on us! Here: 
+[M * L / T^2] = [M] * [L / T^2];
+[M * L^2 / T^2] = [M] * [L^2 / T^2];
+we can define Mass, Length, Time as fundemental units:
+unit = M^a * L^b * T^c;
+unit = (a, b, c);
+
+How can we implement something that checks our units? 
+struct Unit {
+	int a, b, c; // Type of the unit; this is runtime info
+	double v_; // Value of the unit
+};
+
+// User can't check return type until run time
+Unit operator*(const Unit& u1, const Unit& u2) {
+}
+
+The struct Unit is not great: 
+1.) Unit must carry around 3 extra integers
+2.) Unit holds run-time type information, and it will not ensure
+	compile-time type checking
+
+We want to have static, compile-time type information! If only there
+was a way to parameterize types...TEMPLATES!
+
+We want to parameterize our types on our units: 
+template <int A, int B, int C>
+struct Unit {
+	double v_;
+};
+
+using Mass = Unit<1, 0, 0>;
+using Force = Unit<1, 1, -2>;
+
+Is it possible to define all the units at once? 
+Now can we write operator* ? 
+
+template<a1, b1, c1, a2, b2, c2>
+Unit<a1 + b2, b1 + b2, c1 + c2> operator* (
+		const Unit<a1, b1, c1>& u1, const Unit<a2, b2, c2>& u2) {
+	return Unit<a1 + b2, b1 + b2, c1 + c2> (u1.v_ * u2.v_);
+}
+
+The compiler will figure out which units have been passed to the function
+and determine all of the correct types.
+
+??What is the overhead of writing this??
+==> There is no overhead.
+
+Unit becomes a type when we have specified template parameters. The type
+is parameterized on the template parameters. At run time, two values are 
+multiplied together. The storage overhead is zero. The compiler uses template
+parameters to stamp out types and they are not used at all at run time. 
+Types are generated at compile time and there is no storage or run-time 
+overhead to using this system.
+
+operator+(const Unit<A,B,C>& u1, const Unit<A,B,C>& u2);
+
+BOOST C++: An example of template metaprogramming
+==> Units
+==> MPL / Fusion
+
+Run time computation: 
+double v = a * factorial(b);
+
+What if I want to compute the factorial at compile time ? 
+double v = a * factorial<4>::value;
+
+
 9/26: 
 Why are representation invariants useful? 
 template <It, Pred>
