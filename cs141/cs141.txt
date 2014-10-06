@@ -1,0 +1,70 @@
+10/6:
+??FINITE STATE MACHINES??
+==> Steps:
+	1.) Understand
+	2.) Obtain abstract representation of FSM
+		==> draw state transition diagrams
+		==> or alternative state machine representation
+	3.) Perform state minimization
+	4.) Perform state assignment
+		==> encode states
+		==> build state transition table
+	5.) Implement
+
+==> STATE MINIMIZATION
+	==> Two states are equivalent if: 
+		==> output behavior is identical for all inputs
+		==> next state same or equivalent for all inputs
+	==> You could build full state transition diagram and look 
+		for cases where you could merge states
+
+==> STATE ASSIGNMENT
+	==> How to represent state names in binary encoding
+	==> Hueristics: 
+		==> minimum bit change
+		==> one hot encoding: num(flip flops) equal to # of states
+			==> Example for three states: 
+				001, 010, 100 -> only one flip-flop is active for each state
+			==> Binary encoding could be: 
+				00, 01, 10 -> log2(N) flip flops used
+		==> Minimize state variables that change on each transition
+		==> If unused state bits, utilize these bits to achieve the above
+			goals
+	==> FSM Partitioning
+		==> KEY IDEA: introduction of idle states
+			==> Generate two smaller finite state machines that have 
+				links to transfer from one machine to the other
+
+==> EXAMPLE: Simple vending machine
+	==> Step 1: Understand the problem
+		==> Vending machine dispenses gum given 15c or more
+		==> Inputs: nickel, dime, reset, clk
+		==> Outputs: dispense
+		==> What inputs lead to an output? 
+			==> 3N; D,N; N,D; D,D; N,N,D
+	==> Step 2: Abstract Representation
+	==> Step 4: State Assignment
+	==> Now onto the Gate Implementation
+		==> The present state is the output of the flip flop, the next
+			state is the input to the flip flop
+			==> Calculating the next state will involve some gate logic
+				between the inputs and the current state outputs
+
+==> Timing
+	==> Flip flop samples input (D) at clock edge
+	==> D must be stable when it is sampled
+	==> Similar to photograph, D must be stable around the clock edge
+	==> If D is changing when it is sampled, errors can occur
+	==> Output timing constraints
+		==> Output is undefined for a certain amount of time after the 
+			clock has fired
+	==> Dynamic Discipline
+		==> The input to a synchronous sequential circuit must be stable
+			during the aperature time
+		==> Tpcq and Tsetup are determined by a flip-flop designer
+		==> However, you can change your combinational logic to make it
+			faster or slower
+	==> What is the Hold Time Constraint
+		==> Minimum delay through the circuit
+		==> Why do I care? 
+			==> The inputs must stay the same during the hold time

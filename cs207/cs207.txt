@@ -1,3 +1,73 @@
+10/6: 
+??LOOPS??
+==> for( INITIAL; PREDICATE; NEXT ) {
+		BODY;
+	}
+
+==> We could also write this as a WHILE loop: 
+	==> F;
+		while (P) {
+			BODY;
+			NEXT;
+		}
+==> Now we are going to assert @pre and loop
+	invariants
+	==> F;
+		assert( @pre );
+		assert( LI ); // Loop invariants
+		while( Predicate ) {
+			BODY;
+			assert( LI );
+		}
+		assert( @post );
+	==> 1.) @pre ==> LI; // Preconditions imply the loop 
+		invariant
+	==> 2.) P & S ==> LI
+	==> 3.) (!P) & LI ==> @post
+==> APPLY this to something simple (Think about this in terms of 
+	mathematical induction)
+	==> //@pre: n >= 0; @post:  result = Sum(0 to N)
+		int sum( int n ) {
+			int result = n;
+			while( n > 0 ) { // @pre n >= 0, result == n
+							 // LI: n >= 0; result == n_orig + (n_origin - 1) + n
+				--n;
+				result += n;
+							 // LI: still holds here
+			}
+			return result;
+		}
+==> DECREMENTING FUNCTIONS (DF)
+	==> 4.) P & LI ==> DF(x) > DF(x + S) // How does this apply with probability loops
+	==> 5.) (DF(x) == min()) ==> !P
+	==> ??What is a good decrementing function in our case??
+		==> DF(x) = n, min of 0
+	==> 6.) (P & LI) & S ==> DF(x) >= min
+==> APPLY THIS TO GCD
+		@pre a >= 1, b >= 1
+		@post return GCD(a, b)
+	==> int gcd(int a, int b) {
+			@pre: a >= 1, b >= 1
+			while( a != b ) {
+				@LI: 
+				if ( a > b )
+					a -= b;
+				else
+					b -=a; 
+				@LI: GDC(a, b) == GCD(orig_a, orig_b);
+					 a >= 1, b >= 1
+			@post: a == b; a == GCD(orig_a, orig_b);
+			return a
+			}
+		}
+	==> What the DF for this implementation?
+		==> DF(x) = a + b - 2 * GCD; min 0
+		==> DF(x) = max(a, b) - GCD; min 0
+==> APPLY THIS TO LOWER BOUND
+	==> int lower_bound( const T* a, int low, int high , T v) {
+		}
+
+
 10/3:
 ??Let's talk about GRAPH and REMOVE NODE / EDGE??
 ==> Excercise 2 served to remind us of invalid objects
