@@ -1,3 +1,53 @@
+10/8:
+??LEARN THREE THINGS??
+==> Registers and Wires
+==> Always blocks
+==> Finite State Machine
+
+??REGISTERS AND WIRES??
+==> Wires
+	==> No state
+	==> pieces of metal
+	==> Results of digital logic and combinational 
+	==> Use to compute values
+==> Registers
+	==> Hold state
+	==> Use to save data at the end of every cycle
+	==> Think of D flip flop from homework
+==> Multiply and Add Circuit: Y = A * B + C;
+	==> wire A, B, C, Y, temp;
+		assign temp = A * B;
+		assign Y = temp + c;
+	==> // Example with registers
+		wire A, B, C, Y;
+		wire temp_n;
+		reg temp;
+		always@(posedge clk) begin
+			temp <= temp_n;
+		end
+		assign temp_n = A * B;
+		assign Y = temp + c;
+==> ALWAYS BLOCKS
+	==> Always @ (sensitivity list)
+		==> every time any of the events in the list happens, the logic fires
+	==> Two types of lists
+		==> Combinational
+			==> assign statements at top of file
+		==> Sequential
+			==> Triggered by a fixed event
+	==> Blocking assignment: "="
+		==> wire assignment should be used using blocking statements
+		==> Statements using "=" execute procedurally
+	==> Non-blocking assignment: "<="
+		==> Use these in the always sections to save values to registers in
+			parallel
+==> Design Tips
+	==> Name wires <var>_next and regs <var>
+	==> Group your always blocks at the top of the file
+	==> Have all combinatinoal logic at the bottom of the file
+	==> Clean coding reinfornces paradigm
+
+==> Finite State Machines
 10/6:
 ??FINITE STATE MACHINES??
 ==> Steps:
