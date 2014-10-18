@@ -1,3 +1,20 @@
+10/10:
+??Can we apply constraints in faster than O(N) complexity??
+==> Proposal: an entirely new data type, 
+	class MortonSorted {
+		MortonSorted(PointIter p_beg, PointIter p_end)
+
+		// This is like a filter iterator, we could easily hit O(N)
+		// We want to hit faster than O(N) dough
+		neighborhood_iterator begin(BoundingBox& bb)
+		neighborhood_iterator end(BoundingBox& bb)
+	};
+	==> How do I construct one of these using my graph?
+		-Use a node iterator...ties this too closely to the graph class
+	==> Transform Iterator? Build this with node iterators...?
+		Grab a node iterator and change the dereference operator in order
+		to return a Point and not a node
+
 10/8: 
 ??LOOP INVARIANTS??
 Structure of a loop: 
@@ -8,6 +25,9 @@ while( P ) {
 	// @LI
 }
 // @post
+
+
+/** You can write this inside of code ! */
 1.) @pre => LI
 2.) (LI + P) + S => LI
 3.) LI + !P => @post (often most useful for figuring out LI)
@@ -33,6 +53,64 @@ int lower_bound(T* a, int low, int high, T v) {
 			: For low <= i < orig_hi, !(a[i] < v)
 	return low;
 }
+
+??Questions on HW2??
+==> Problem1Force has a lot of things going on. How do we write a single
+	force function / struct that can encompass all of it? 
+	==> Split it up into parts!
+		==> Mass / Spring Force
+		==> Gravity Force
+	==> Interface for combining forces? 
+		MassSpringForce msf();
+		GravityForce gf();
+		auto f = make_combined_force(gf, msf);
+	==> How do we solve this problem? Abstract virtual function?
+		class Force {
+			virtual Point operator()(Node n, double t)=0;
+		};
+
+		class GravityForce : public Force {
+			virtual Point operator()(Node n, double t) {
+				// implementation
+				return Point(0, 0, -grav * n.value().mass);
+			}
+		};
+	==> So why does Chris not like this solution?
+		There are strict rules about when and where to use inheritance.
+		This solution is 35% slower than the solution that Chris
+		developed. Virtual functions are implemented as pointers to 
+		functions. Instead of being able to broadcast functions that
+		can be inlined, there is a big list of pointers that point to 
+		the implementation of the function in the concrete class.
+		Why is this bad? This lookup happens in the innermost loop
+		of the entire program. This is being done more times than 
+		anything else so it becomes a very heavy cost. What can we do
+		using C++ magic to make this better? 
+	==> C++ magic to make this better?
+		What is the force concept? anything(n, t) ==> Point
+		// F1 and F2 must satisfy the force concept
+		template <F1, F2>
+		class MetaForce {
+			F1 f1;
+			F2 f2;
+			Point operator()(Node n, double t) {
+				return f1(n, t) + f2(n, t);
+			}
+		};
+	==> What if we want to combine more than two forces? 
+		as in: auto f2 make_combined_force(gf, msf, ZeroForce());
+		==> The type of f2 could be:
+			MF<MF<GF, MSF>, ZF>
+		==> Are there any ways of checking that F1 and F2 in MetaForce
+			obey the Force concept? No! This must be well documented
+		==> Why is this faster? 
+			Compiler knows the type of MetaForce at compile time.
+			There is no function chasing and the compiler can inline 
+			the functions. However, we have to specify all the forces
+			at compile time. We may, however, generate forces at run
+			time...Like, what if we want to change the number or type
+			of forces at run time?
+
 10/6: 
 ??LOOPS??
 ==> for( INITIAL; PREDICATE; NEXT ) {
