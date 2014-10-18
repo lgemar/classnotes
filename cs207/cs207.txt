@@ -1,3 +1,38 @@
+10/8: 
+??LOOP INVARIANTS??
+Structure of a loop: 
+// @pre
+// @LI
+while( P ) {
+	S; 
+	// @LI
+}
+// @post
+1.) @pre => LI
+2.) (LI + P) + S => LI
+3.) LI + !P => @post (often most useful for figuring out LI)
+4.) (LI + P) + S => DF(x) > DF(x + S) // DF defined over naturals
+5.) (LI + (DF(x) == min)) => !P
+6.) (LI + (DF(x) > min)) => (DF(x + s) >= min)
+
+// Return pointer to first element not less than v
+// @pre a is sorted, low <= high
+int lower_bound(T* a, int low, int high, T v) {
+	// @pre low <= high, a sorted
+	// @LI: lo_orig <= i < lo, a[i] < v
+		  : hi <= i < orig_hi => !(a[i] < v)
+	while( low < high ) {
+		int mid = low + (high - low) / 2;
+		if( a[mid] < v)
+			low = mid + 1;
+		else 
+			hi = mid;
+		// @LI
+	}
+	// @post: For all i, low_orig <= i < low, a[i] < v
+			: For low <= i < orig_hi, !(a[i] < v)
+	return low;
+}
 10/6: 
 ??LOOPS??
 ==> for( INITIAL; PREDICATE; NEXT ) {
