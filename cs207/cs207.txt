@@ -1,3 +1,42 @@
+10/15: 
+??STL Containers: Data Representation??
+==> Vector: an Array
+==> Set + Map: Balanced Binary Tree
+==> Unordered Set / Map: Hash Tables
+
+Cont		Insert		Lookup:find Iterate
+Vector		O(1), O(N)	O(N)		O(N)	
+Set			O(log N)	O(log N)	O(N)
+Unordered	O(1), O(N+) O(1)		O(N)
+
+Cont		Insert	Lookup	Iterate
+Vector		1x				1x			(very very fast, good caching)
+Set			?x							(heap memory is not cache coherent)
+Unordered	15x							
+
+??When don't you want to use vectors??
+==> If you are doing a ton of lookups, a set might make sense, especially
+	an unordered set. The cost of a lookup is basically the hash cost, 
+	plus the lookup, plus the compare.
+==> Binary search on a vector means you need to keep the vector sorted
+	and this can be very expensive. In this case you will want to use
+	a hash table of some kind.
+==> You may actually want to test which operation is the fastest for
+	your particular application.
+
+??What is Thouis's favorite spatial data structure??
+==> A GRID! Subdivide space and keep a list of which grid each center 
+	in 
+	: To check for collisions just check inside 3x3 box
+	: for b1 in balls
+		for b2 in near(b1):
+			if ( b1 < b2 ) && colliding: 
+				do_something()
+	: This grows linearly with the number of balls; each ball checks a 
+	  constant number of objects around it
+	: Improve the behavior of grid by keeping the balls Morton sorted 
+	  in the grid
+
 10/10:
 ??Can we apply constraints in faster than O(N) complexity??
 ==> Proposal: an entirely new data type, 
@@ -14,6 +53,30 @@
 	==> Transform Iterator? Build this with node iterators...?
 		Grab a node iterator and change the dereference operator in order
 		to return a Point and not a node
+		// Transform iterator
+		Point op*() {
+			return (*it).position();
+		}
+		Free implementation: Boost iterator (takes iterator and what
+		is known as a "projection" operator);
+	==> How could we do this faster than O(N) to find points in 
+		bounding box
+	==> First, solve the problem in 2D
+		: order the points along y and order the points along x
+		: if the user passes a bounding box, do two lower bound 
+		  searches to look for the lower bounds of the bounding
+		  box in x and y, then iterate until you find upper bound
+	==> Could guarantee the user that you are iterating over all points
+		in the bounding box or only points in the bounding box. The 
+		huge win here is that finding the lower bound is very fast.
+==> What does Morton do? 
+	Sorts points in 2D using a Z fractal pattern. The "code" that 
+	imposes order on 2D space is a Morton code.
+==> What does the Hilbert Curve look like? This is another space
+	filling curve
+	: advantages: a little bit smoother, better guarantee that two
+	  close numbers in space are much closer in their Hilbert curve
+	  encodings
 
 10/8: 
 ??LOOP INVARIANTS??
