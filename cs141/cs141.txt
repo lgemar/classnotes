@@ -1,3 +1,67 @@
+10/20: 
+??Computer Architecture??
+==> Interface between the software and the low level logic hardware
+==> Architecture = interface between hardware and software in a computer
+	system
+==> Implementation = specific hardware design
+==> In GPU's the compiler is "embedded in the hardware", meaning instruction
+	set is actively accessed at run time by the GPU companies software
+==> Simple computer design
+	: CPU -> cache -> memory bus -> memory -> i/o bus -> io devices
+==> Key principles
+	==> Multiple interpretations for a bit string
+		: two's complement
+		: single precision floating point
+		: instruction
+	==> Programs manipulated in memory, just like data
+		: high-level -> compilation -> assembly -> register allocation -> 
+		  machine language -> assembly -> binary instruction -> execution
+==> Decode instructions into multiple categories
+	1.) Arithmetic/Logic instructions
+		: read 2 register values, perform operation, store result
+	2.) Memory Instructions
+		: load and store data into memory
+	3.) Control Flow instructions
+		: change of flow based on comparison
+
+??How does CPU interface to Memory and I/O systems??
+==> Instruction execution follows specific sequence
+	: instruction fetch -> operand fetch -> execution -> write result
+==> Possible external operations
+	: memory read/ write
+	: I/O device read or write
+	; interrupt acknowledge
+
+??How do Buses work??
+==> Bus = one set of wires used as a shared communication link between 
+	multiple subsystems of computer
+	: pros ->
+		-> versatility
+		-> may limit i/o capacity
+	: speed is limited by length of bus and number of devices connected
+	: bus speed limited by range of devices
+	: General structure of a bus
+		-> set of data lines
+		-> set of control lines
+	: Bus transaction
+		-> read
+		-> write
+		-> Nowadays, buses are beginning to send / recieve packets
+	: Timing Schemes
+		-> synchronous: clock is included in the control lines
+			-> advantages
+				: straightforward implementation
+				: bus runs fast
+			-> disadvantages
+				: every device must run at the same speed
+		-> asynchronous: no clock, use handshake protocol (request-reply-ack)
+	: Asynchronous
+		t0) master asserts lines
+		t1) master waits and asserts req
+		t2) device asserts Ack
+		t3) master releases Req
+		t4) device releases ack
+
 10/8:
 ??LEARN THREE THINGS??
 ==> Registers and Wires
