@@ -1,3 +1,23 @@
+10/21: 
+==> Caller Saved Registers: callee can modify without saving or restoring
+	: garbage at the entrance of the function
+	: eax, ecx, edx
+	: %eax stores the return value of the function
+==> Callee Saved Registers: callee must restore the original value
+	: must be saved by the callee if the callee wants to use
+	: ebx, esi, edi, eip, esp, ebp
+==> Currently running function always has the top of the stack
+==> Caller saves its variables above the top of the stack
+	: Callee saves its variables below the top of the stack
+==> f51.c
+	: why does g have no arguments? 
+		--> Not initiazing space with anything
+	: Stack is always aligned to a multiple of 16
+==> Positive offsets of %esp are the next guys arguments
+==> Negative offsets off of %ebp are our local variables
+==> positive offsets off of %ebp are our arguments
+==> "leave" pops %ebp
+
 9/11 -> Lecture Notes:
 /* Integer arithmetic: b - a -> normal math result
  * Pointer Arithmetic: b - a with type T* -> 

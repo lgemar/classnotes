@@ -1,3 +1,111 @@
+10/21: 
+??OOP??
+==> Programming Patterns
+	--> Templates (Generic) [Concepts]
+		: if it looks like a duck, walks like a duck, and quacks, it's
+		  a duck
+		: parameterizing functions based on types
+		: scary, because documentation needs to be good when the 
+		  function takes many template types
+	--> Iterator
+		: Filter
+		: back_it
+		: forward
+		: random access
+	--> Adaptor
+		: Takes a type and wraps around it another type
+		: filter_it and back_it are examples
+	--> Proxy
+==> Def'n: The ability to express intimate relationships between types 
+	and classes
+	--> Uses Inheritance
+		: Polymorphism (dynamic, ?static?)
+		: class B {
+		  ...
+		  };
+		  class A : public B {
+		  ...
+		  };
+		: A is a "derived class" and B is the "base class"
+		: If you just want to use the function
+		: class Engine
+		  class Wheel
+		  class Car
+		  	: public Engine
+			: public Wheel
+		  class Plane
+		  	: public Engine
+			: public Wheel
+		: Thumb test -> distinction between "is-a" and "has-a"
+			--> inheritance gives a "is-a" relationship
+			--> in the case above, the relationships are "has-a" 
+				relationships
+		: Better solution
+		  class Car {
+		  	Engine e_;
+			Wheel w_;
+		  };
+		  class Plan {
+		  	Engine e_;
+			Wheel w_;
+		  };
+	--> What are the diffs between has-a and is-a relationships?
+	--> Inheritance is very difficult when there are representation 
+		invariants that need to be upheld
+	--> Examples
+		: class Shape {
+			public: 
+				Point center;
+				void draw() { ... };
+		  };
+		  // Cube "is-a" shape
+		  class Cube : public Shape {
+		  	public:
+				double volume() { return side * side * side };
+				double side;	
+				void draw() { ... };
+		  };
+		  class Sphere : public Shape {
+		  	public: 
+				double volume() {};
+				double radius;
+				void draw() { ... };
+		  };
+		: Functions
+		  void draw(Shape& s) {
+		  	s.draw();
+		  }
+		  void move(Shape& s) {
+		  	s.center += 1;
+		  }
+		  double volume(Cube& c) {
+		  	return c.volume();
+		  }
+		: Main 
+		  main() {
+		  	Shape sh;
+			sh.draw() // Shape::draw()
+			Cube c;
+			c.draw() // Cube::draw()
+			draw(c); // Which draw function gets called?
+					 // Since it's a non-virtual override, 
+					 	we will call Shape::draw()
+					 // If you want to use Cube's draw, then
+					 	you need the draw function to be 
+						virtual
+		  }
+		: Using "Virtual"
+		  class Shape {
+			public: 
+				Point center;
+				virtual void draw() { ... };
+		  };
+		  class Cube : public Shape {
+		  	public:
+				double volume() { return side * side * side };
+				double side;	
+				virtual void draw() { ... };
+		  };
 10/15: 
 ??STL Containers: Data Representation??
 ==> Vector: an Array
