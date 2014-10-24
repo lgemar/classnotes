@@ -1,3 +1,39 @@
+10/22:
+
+??Computer Architecture??
+==> Def'n: architecture = interface between hardware and software in a 
+	computer system
+	: System design -> focus on Busses, I/O, Memory Controllers, etc
+	: Instruction Set Architecture
+	: Implementation -> specific hardware design 
+==> Instruction Set Architecture (MIPS for this class)
+	--> "Contract" between the programmer and the compiler
+	--> operations that the processor can execute
+	--> data transfer mechanisms
+	--> control mechanisms
+==> Design Choices
+	--> Which operations supported? 
+	--> Types of operands? 
+	--> Types of operand storage? 
+	--> Implicit vs. explicit operands?
+==> Reduced Instruction Set Computing vs Complex Instruction Set Computing
+	: ARM -> example of RISC, complexity in the compiler
+		--> reg to reg operation (load / store)
+		--> basic functions
+		--> fixed instruction length
+	: CISC -> example is x86, complexity is in the hardware
+		--> Reg to mem operation
+		--> complex functions (e.g. string comparison)
+		--> variable length instructions
+==> Addressing Modes
+	: mapping must be done from virtual to real address
+	: registers corresponding to variables in C program ($s0, $s1, ...)
+	: temporary registers need to compile into MIPS ($t0, $t1 ...)
+	: add/sub $s2, $s0, $s1 # $s2 = $s0 +/- $s1
+	: lw == (load word)
+	: sw == (store word)
+	: lw $s1, k($s2) # $s1 = A[k] where $s2 is base of array
+	: sw $s1, k($s2) # A[k] = $s1 where $s2 is base of array
 10/20: 
 ??Computer Architecture??
 ==> Interface between the software and the low level logic hardware

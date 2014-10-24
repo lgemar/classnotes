@@ -1,3 +1,77 @@
+10/23:
+??Inheritance??
+==> Dynamic Polymorphism
+	: class Base {
+	  	void do() {};	
+	  };
+	  class Derived : public Base {
+	  	void do() {};
+	  };
+	: Now we can use the base class's functionality for derived class, right?
+	  size(Base& b)
+	  draw(Base& b) {
+	  	b.do(); // for non-virtual functionns the base class will be called
+	  }
+	: if we make the Base classes "do" function virtual, then the draw function
+	  will call the derived class's "do" function (if the parameter is passed
+	  by reference)
+	: This changes between every language
+	: Virtual function dispatches can be dangerous and slow down the program
+	  considerably
+		--> The compiler doesn't know at run time which virtual function it
+			will call so it can't inline the virtual function
+		--> The number of virtual functions inside MTL is 0. Generic interfaces
+			are slow and not used in high performance computing.
+	: Top Down
+	  -Defining explicit interface
+	  -Derived classes must implement
+	: Bottom up
+	  -Templates to define concepts
+	  -Instantiated types must implement these functions
+==> When do we need to use dynamic polymorphism?
+	: In HW2 there were a static # and static type of Forces and constraints =>
+	  tuple<Force1, Force2, ...>
+	: When would we need dynamic polymorphism?
+	: class Force {
+	  	virtual Point eval(Node, double);
+	  };
+	  class GravityForce : public Force {
+	  	eval(Node, double); 
+	  };
+	  class NodeSpringForce : public Force {
+	  	eval(Node, double);
+	  };
+	: build a force collection
+	  std::vector<Force*> forces;
+	  Point eval(Node n, double t) {
+	  	for(auto f : forces)
+			f.p += f->eval(n, t);
+	  }
+	: What information has changed from the static to dynamic case?
+		--> Dynamic # and Dynamic Types
+	: Could we build a dynamic # of static types?
+		==> vector<Force1>
+			vector<Force2>
+	: Could we build static # of dynamic types
+		==> tuple<Force*, Force*, ... >
+==> In what places can OOP and Dynamic polymorphism really be useful?
+	==> STRATEGY PATTERN (related: VISITOR PATTERN)
+		: choose implementation or algorithm at RUN-TIME
+		: class SpecialMatrix {
+		  	MatvecPlan* plan_;
+			// Return new plan
+			MatvecPlan* choose_plan( ... ) { ... }; 
+		  };
+==> Emphasis on the reading
+	: What is base class BEHAVIOR?
+	: pre -> weakened (the derived class can take a few extra or different
+	  inputs)
+	: post -> strengthened (all the postconditions of the base class must be
+	  overridden and we are allowed to add more)
+	: The result is that the invariants of the methods remains unchanged
+	: Example, visual_iteration should not change the behavior of the cyclic
+	  iteration, but it extends it
+	
 10/21: 
 ??OOP??
 ==> Programming Patterns
