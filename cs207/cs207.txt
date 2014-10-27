@@ -1,3 +1,62 @@
+10/26:
+==> LSP
+	: pre -> weaker
+	: post -> stronger
+	: Could we make GraphSymmMatrix a derived class of Graph?
+		--> remove nodes would remove rows from the matrix
+		--> remove edges would modify elements of the symm matrix
+		--> Would there be any issues?
+			: GraphSymmMatrix
+				--> op[]
+				--> op(i,j)
+				--> op*
+				--> mult
+			: size()
+				--> Graph should return num_nodes
+				--> GraphSymmMatrix should return num_nodes * num_nodes
+==> Representation Invariants
+	: RI(obj) maps the representation of the object to a boolean
+	: class obj {
+		public:
+			int a;
+		private:
+			int b;
+			vector<int> v;
+	  };
+	: RI(obj) : F(b, v) => {T/F}
+		--> These are the preconditions and postconditions for every
+			single public function
+		--> What are the representation invariants of GraphSymmMatrix?
+			: GraphSymmMatrix is an adapter that makes a graph look/feel
+				like matrix
+		--> RIs
+			: preconditions to every public member function except constructors
+				--> Something like...
+					Edge e;
+					e.g_ = this;
+					e.uid1 = n_uid1;
+					...should happen in a CONSTRUCTOR!
+			: postconditions to every public member function except destructors
+==> Abstraction Function
+	: AF(obj) : F( "all member variables" ) => Abstract representation of data
+	: Examples of abstract reps of data -> 
+		- [a0, a1, ... , an-1]
+		- {a0, a1, ... , an-1}
+	: AF(Graph) : <N, E> that define a graph (N ordered array, E set of
+						 unordered pairs of nodes)
+				: N=[n0, n1, ... , nm-1], m = i2u_.size() (using rep to define
+														   abstract values)
+				: E={ {ni, nj} | i is in adj_[j] && j is in adj_[i] }
+	: /** @breif A class representating a graph
+	   * AF(GraphSymmMatrix) : F(graph) => num_nodes x num_nodes symmetric Matrix
+										with elements Aij with i,j < num_nodes
+										and Aij = {1, g_.node(i).value() == 'b'
+													  && g_.node(j).value()=='b'
+												  {0, g_.node(i).value() == 'b'
+												  {Lij
+	   */
+	: AF(Point) : F(x, y, z) : a 3D point with position <x,y,z>
+
 10/23:
 ??Inheritance??
 ==> Dynamic Polymorphism
