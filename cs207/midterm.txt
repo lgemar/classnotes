@@ -53,3 +53,29 @@ Representation Invariants:
 3.) check_.size() <= position_.size() && value_.size() <= position_.size()
 	==> There is no way that we could check more values than are in the array
 
+==> Problem 5 <==
+
+/** Find the first TRIANGLE in the graph for which the predicate returns true
+ * 
+ */
+TriangleIter find_triangle(TriangleIter first, 
+						   TriangleIter last, TrianglePred pred);
+
+template <typename Node>
+struct Triangle {
+	Node n1, n2, n3;
+}
+
+template <typename GraphType>
+class TriangleIter {
+	// Constructor takes a graph and returns and iterator over triangles
+	TriangleIter(GraphType g);
+	Triangle operator*() const;
+	TriangleIter& operator++(); 
+	bool operator==(const TriangleIter& it) const;
+}
+
+template <typename Triangle>
+class TrianglePred {
+	bool operator()(Triangle t);
+}
