@@ -1,3 +1,81 @@
+10/31:
+==> <type_traits>
+	template<class T, class U>
+	struct is_same {
+		constexpr static bool value = false;
+	};
+	if(is_same<int, float>::value) { ... }
+	else if (is_same<int, int>::value { ... }
+
+	template <class T>
+	struct is_same<T, T> {
+		constexpr static bool value = true;
+	};
+	struct true_type {
+		constexpr static book value = true;
+		typedef true_type type;
+	};
+	struct false_type {
+		... 
+	};
+	template <class T, class U>
+	struct is_same : public false_type {};
+	template <class T>
+	struct is_same : public true_type {};
+
+	template<IIter, OIter>
+	OIter copy(IIter first, IIter last, OIter out) {
+		for( ; first != last; ++first, ++out)
+			*out = *first;
+	}
+==> how would we copy in C? 
+	memcpy(void* dest, void* src, size_t (last - first) * sizeof(T));
+==> Using memcpy in copy?
+	// This is only a shallow copy, not a deep copy
+	template<T>
+	T* copy (T* first, T* last, T* out) {
+		memcpy(void* out, void* first, size_t (last - first) * sizeof(T));
+	}
+	: This would be a big problem for a vector<vector<int>>, copying
+	  would simply create an alias
+==> What is trivially copyable? Pretty much anything without a pointer
+	: We would like to ask if T is trivially copyable
+	template <T>
+	T* copy(T* first, T* last, T*out) {
+		if(is_trivially_copyable<T>::value)
+			memcpy( ... );
+		else
+			for ; first != last; ++first, ++out)
+				*out = *first;
+	}
+==> Here is a way that we can dispatch based on tags / types
+	: We would like to call memcpy if T is trivially copyable
+	template<T>
+	T* copy(T* first, T* last, T* out) {
+		return copy(first, last, out, is_trivially_copyable<T>());
+	}
+	T* copy( T* first, T* last, T* out, true_type) {
+		memcpy( ... );
+	}
+	T* copy( T* first, T* last, T* out, false_type) {
+		std::copy(first, last, out);
+	}
+==> Consider iterator tags
+	: //Distance
+	  size_t distance(Iter f, Iter l) {
+	  	size_t n = 0;
+		for( ; f != last; ++f, ++n);
+		return n;
+	  }
+	: If we have a random access iterator...
+  	size_t distance(Iter f, Iter l, input_iterator_tag) {
+	  	size_t n = 0;
+		for( ; f != last; ++f, ++n);
+		return n;
+	}
+  	size_t distance(iter f, Iter l, random_access_iterator_tag) {
+	  	return l - f;
+	}
 10/26:
 ==> LSP
 	: pre -> weaker
