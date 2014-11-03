@@ -1,3 +1,26 @@
+11/3: 
+==> Test review <==
+==> Problem 1
+	: Iterator concept is assumed to take constant time
+==> Problem 2
+	: OIter std::copy(IIter a, IIter b, OIter c)
+	: offsets = [first, i1, i2, ..., last];
+	: offsets should be referred to as result in the specification
+	: @pre num_buckets > 0
+	: @pre for all i, first <= i < last, 0 <= map(*i) < num_buckets;
+	: @post for all i, new first <= i < j < new last, map(*i) <= map(*j)
+	: @post result.size() == num_buckets + 1
+	: @post for all i 0 <= i < num_buckets; for all it result[i] <= it < 
+		result[i+1], map(*it) == i
+==> Problem 4
+	: { [v0, v1, ..., vi .. ] | vi = value_[position_[i]] ... IF 
+		i <= position_.size() && position[i] < check_.size() 
+		&& check_[position_[i]] == i
+		ELSE vi = T()
+	1.) RI( sv ) = check_.size() == value_.size()
+	2.) for all i in range [0, check_.size()), 
+		check_[i] < position_.size() && position_[check_[k]] == k
+==> Problem 5
 10/31:
 ==> <type_traits>
 	template<class T, class U>

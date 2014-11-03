@@ -1,3 +1,54 @@
+11/3: 
+==> Multicycle Implementation Overview
+	: each step in the execution takes 1 clock cycle
+	: an instruction takes more than 1 clk cycle
+	: not every instruction takes the same number of clock cycles to 
+	  complete
+	: multicycle implementations allow
+		--> only need one memory
+		--> need only one ALU/adder
+	: faster clock rates
+	: different instructions take different number of cycles
+	: clock has to be attached to anything that holds state
+	: break up instructions into steps where each cycle takes a fiixed
+		amount of time
+	: restrict each cycle to use only one major functional unit
+	: internal register = something used internally by the processor
+		to ease implementation
+	: All internal registers hold data ONLY between a pair of adjacent
+		clock cycles (so don't need a write control signal)
+		--> I need to know what instruction I'm running at each cycle
+		--> internal registers cannot pass data between instructions
+	: Steps
+		1. instruction fetch
+			-use PC to get instruction from memory and put in the 
+			 instruction register
+			-incement the PC by 4 and put the result back in PC
+			-can be described succicly as
+				IR = Memory[PC]
+				PC = PC + 4; //instructions are 32 bits = 4 bytes
+			-use the adder now, while no one else is using it
+		2. instruction decode and register fetch
+			-read registers rs and rt IN CASE we need them
+			-compute the branch address IN CASE the instruction is a branch
+			-A = Reg[IR[25-21]]
+			-B = Reg[IR[20-16]]
+			-ALUOut = PC + (sign-extend(IR[15-0]) << 2);
+				-the shift by 2 is a sign extend, taking the # of instructions
+				and multiplying by 4
+			-we put calculations in ALUOut but we keep it there because
+				we don't know if we want to branch yet
+		3. r-type instruction execution, memory read/write address, 
+			computation, branch completion, jump completion (INSTRUCTION DEP)
+				--> The finite state machine will fork to 4 different states
+		4. Memomry read access, memory wrtie completion or R-type 
+			instruction completion
+			--> we have to finish reading/writing from memory
+			--> for R-type instructions we need to finish reading or wrtiing
+				from register
+	: There is a finite state machine that figures out our progress
+		through a particular instruction
+
 10/22:
 
 ??Computer Architecture??
