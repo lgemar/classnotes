@@ -1,3 +1,82 @@
+11/5: 
+==> All Meshes are Graphs... <==
+	--> But not all Graphs are Meshes! B/c meshes are composed
+		of triangles
+		: certain operations like has_edge don't make sense in 
+			a mesh
+	--> Because we are only doing 2-D meshes, there can be at most
+		2 triangle edges for each edge
+==> Physics behind the mesh
+	: we are trying to represent a column of water with each triangle
+	: this is represented by storing a value, h, on each triangle
+	: The fluid within each triangle also has velocity, wx and wy
+	: operations we need to support
+		: neighbors() and need to figure out the vector created
+			by using (hm, wxm, wym) and (hn, wxn, wyn)
+		: defining the edge normal may depend on which triangle is
+			asking for the normal (maybe the normal can point away
+			from the triangle that asks for the norm)
+		: we could define the centroids of the triangles as the nodes
+			in our graph and define the adjacencies of triangles as
+			the edges
+==> INHERITANCE <==
+	--> Facade Pattern: let's look at an iterator...
+		: AF( ) = Mij = m_[i * n + j]
+		: class Matrix {
+		  	virtual double operator()(int i, int j) { ...; }
+			vector operator*(vector x) { ... };
+			private: 
+				std::vector<double> m_;
+				unsigned n,m;
+		  }
+		  class UpperTriangularMatrix {}
+		  class SymmetricMatrix : public Matrix {
+		  	virtual double operator()(int i, int j) { ... }
+		  }
+		  --> AF( ) = Mij = m_[ i * (i + 1) / 2 * n + j]
+		  	  : want to change the abstraction function for the symmetric
+			  	matrix
+			  : PROBLEM: I inherited the functionality but I don't
+			  	want anyone to ever call the operator() of Matrix b/c
+				I changed the abstraction function of the base class
+		: INSTEAD, I'm going to write an INTERFACE that assumes a derived
+			class and provides the extra functionality that that derived
+			class will need
+		: Give a derived class a lot of functionality if they implement a 
+			small number of functions
+		  class MatrixBase {
+		  	public: 
+				double& operator()(int i, int j) {
+					return this->access(i,j);
+				}
+				vector operator*(vector x) { ... }
+			protected:
+				virtual double& access(int i, int j) = 0;
+		  }
+		: // Each derived class is going to be inheriting from the MatrixBase
+		  class SymmetricMatrix : public MatrixBase {
+		  	protected:
+				virtual double access(int i, int j) { ... }
+			private: 
+				std::vector<double> m_;
+				unsigned n,m;
+		  }
+		: template< class Derived >
+		  class IterBase {
+			// Ideally I would want this to take the type of the derived clas
+		  	bool operator==(const Derived& other) {
+				return this->equals(other);
+			}
+			bool operator != ( ... ) {
+				return !this->equals(other);
+			}
+			protected:
+				virtual bool equals(const IterBase& other) = 0;
+		  }
+		  class my_iterator : public IterBase {
+			// I have to assume that the passed "other" is of same type as me
+		  	bool equals(const Derived& other)
+		  }
 11/3: 
 ==> Test review <==
 ==> Problem 1
