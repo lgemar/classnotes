@@ -1,3 +1,5 @@
+11/5:
+==> COMPUTER PERFORMANCE <==
 11/3: 
 ==> Multicycle Implementation Overview
 	: each step in the execution takes 1 clock cycle

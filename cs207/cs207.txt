@@ -1,5 +1,61 @@
+11/10: 
+==> Mesh Class Interface discussion <==
+--> Representation 1
+	: edge_data struct contains a reference to 1 or 2 triangles
+	  + node idx[2];
+	  + value;
+	  + num_triangles;
+	  + triangle_idx[2];
+	: triangle_data struct includes the indices for the 3 nodes
+	  + indices for the 3 edges
+	  + value
+	: class Mesh {
+	  	vector<node_info> nodes_;
+		vector<edge_info> edges_;
+		vector<triangle_info> triangles_;
+		std::map edge_map_; // stand in for adjacency list
+	  }
+	: Node info
+		+ position
+		+ value
+		+ std::set adjacency_ (edges)
+		+ std::set adj_triangles_ (triangles)
+		+ index
+	: Triangle interface (totally_ordered)
+		+ std::set<Node> getNodes();
+		+ Node node(int i) @pre 0 <= i < 3
+		  Edge edge(int i) @pre 0 <= i < 3
+		  Point normal(int i) @pre 0 <= i < 3
+		  	--> normal of edge i
+			--> normal that points away from node i
+	: Can we precompute?
+		--> do not allow the user to change the position of the 
+			node...the user should not be allowed to use a function
+			that looks like...
+			Point& position() {};
+--> Representation 2 (relies on graph_ implementation)
+	: PrimalGraph vs. DualGraph
+		--> PrimalGraph nodes are nodes and edges are edges
+		--> DualGraph ndoes represent triangles and the edges 
+			represent adjacent triangles
+	: Triangle
+		+ index() returns the index of this triangle in the DualGraph
+			: return m_->dual_graph.node(idx_).index();
+		+ nodes(int i)  pass 0,1,2..
+		+ edges(int i)  return the edge opposite node i
+		+ store i < j < k where i,j,k are the vertices in the Primal graph
+		+ private: 
+			Mesh* m_
+			dual_node_index idx_;
+	: a triangle_adj_iterator just has to wrap a DualGraph::IncidentIterator it_;
+	: could you store primal edges on top of dual edges
+	: should I enforce planarity? Maybe leave it up to the user? The constraint that
+		any edge can only be an edge in two triangles is sufficient
+	: What is your interface for add_triangle(Node i, Node j, Node k);
+
 11/5: 
 ==> All Meshes are Graphs... <==
+
 	--> But not all Graphs are Meshes! B/c meshes are composed
 		of triangles
 		: certain operations like has_edge don't make sense in 
