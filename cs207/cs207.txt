@@ -1,3 +1,160 @@
+11/17:
+==> Observer Pattern <==
+class Viewer {
+	void handle_event(SDL_Event event) {
+		// Mouse click
+		// Mouse motion
+		// keyboard
+		// Render Request
+		// Call call-backs provided by the user
+	}
+}
+
+	: We want to provide a virtual interface for a 
+		listener object
+	struct Listener {
+		virtual void handle(SDL_Event event) = 0;
+	};
+	: Viewer is going to have a non-templated add_listener function
+	void add_listener(Listener* l_ptr) {
+		listeners_.push_back(l_ptr);
+	}
+	// We need to store the Listeners by pointer because references
+	// cannot be default constructed to store in a vector
+	std::vector<Listener*> listeners_;
+==> Add custom listeners
+	: struct MyListener : public Viewer::Listener {
+		void handle(SDL_Event e) {
+			... do something interesting with the event
+		}
+	  }
+
+	  int main() {
+		// This is really bad because we could have a deleted listener
+		if(want_listener) {
+			MyListener ml;
+			Viewer.add_listener(&ml);
+		}
+	  }
+	: Solutions to this ugly problem
+	MyListener* ml = new MyListener(); // creates a value on the heap
+	viewer.add_listener(ml);
+	: We want to match "new"s to "delete"s so that we avoid memory leaks
+==> Guard Pattern
+	==> Examples of paired operations
+		timer.start() -> code -> time.stop()
+		new -> code -> delete
+		lock() -> code -> unlock()
+	==> Resource Allocation is Initialization (RAII)
+		struct Timer {
+			clock timer;
+			Timer(){ timer.start();}
+			~Timer(){ print timer.stop();}
+		}
+		: represent resources by allocation of an object
+	==> We could have some kind of smart pointer
+		template <T>
+		struct Ptr {
+			T* ptr_;
+			Ptr() : ptr_(new T()) {}
+			~Ptr() {delete ptr_;}
+			T operator* { return *ptr_; };
+		};
+		: Why is this really bad? Ptr gets deleted as a value, yet allocates
+			and deallocates like a regular pointer
+	==> Here is a smarter smart pointer
+		// RI: If c_ == 0 <==> ptr_ is NULL
+		template<T>
+		struct SmartPtr {
+			T* ptr_;
+			int c_;
+			SmartPtr() : ptr_(new T()), c_(new int(1)) {}
+			~SmartPtr() { if(!(--c)) {delete ptr_; ptr_ = nullptr; }}
+			SmartPtr(const SmartPtr& sp) : c_(sp.c_), ptr_(sp.ptr_) {(*c_)++;}
+		};
+		Viewer::add_listener(SmartPtr<Listener> l) {
+			listeners_.push_back(l);
+		}
+
+11/12:
+==> PARALLEL COMPUTING <==
+==> Intro
+	: std::vector<int> a (1'000'000, 42);
+	  std::vector<int> b (1'000'000, 0);
+	  for(int i=0; i != N; ++i)
+	  	b[i] = f(a[i]);
+	: parallel libarary -> OpemMP
+	  #pragma omp parallel // gcc -fopenmp
+	  {
+	  	int id = omp_get_thread_num();
+		int p = omp_get_num_threads();
+		/** Suggestions (two options)
+		 * Cyclic
+		 * int start = id;
+		 * int end = N;
+		 * int incr = p;
+		 * 
+		 * Block partition
+		 * start = id * N / p;
+		 * end = (id + 1) * N / p;
+		 * incr = 1;
+		 * if(id == (p - 1) end = N;
+		 */
+	  // If I write this...
+	  for(int i = start; i != end; ++i)
+	  	b[i] = f(a[i]);
+	  }
+	: What if we wanted to replace the indices
+	  with iterators? 
+	  // assume you already have first / last, let's write a func
+	  // It can be helpful to return the function if it's mutable?
+	  @tparam Iter models a random access iterator
+	  void parallel_transform(Iter first, Iter last, Fn f) {
+		  #pragma omp parallel 
+		  {
+			int id = omp_get_thread_num();
+			int p = omp_get_num_threads();
+			 // Block partition
+			 auto start = first + id; // still incrementing by id (assumes Random access)
+			 auto end = last;
+			 int incr = p;
+			 if(id == (p - 1) end = N;
+			  for( ; start < last; start += incr)
+				*start = f(*start);
+		  }
+	}
+	: Simpler syntax!!! yay!
+	  #pragma omp parallel for
+	  	for( auto start = v.begin(); start < v.end(); ++start) {};
+	: we could have parallilized all the Force and constraint operations?!
+		We need a random access Node iterator!!
+    	Graph {
+			private: 
+				struct uid2node {
+					Graph* g_;
+					Node operator()(uid_type uid) {
+						return Node(g_, uid);
+					}
+				};
+			public:
+				using node_iterator = boost::transform_iterator<uid2node, 
+												std::vector<uid_type>::const_iterator>
+				node_iterator node_begin() const {
+					return node_iterator(uid2node{this}, i2u_.begin());
+				}
+			// I don't want to implement all the random access functions!
+			node_it {
+				Graph* g_;
+				Iter it_; // over i2u_
+				Node operator*() {
+					return Node(g_, *it_);
+				}
+			}
+			std::vector<uid_type> i2u_;
+		};
+	: transform iterator = iterator built on another iterator and transforming
+	  its output
+
 11/10: 
 ==> Mesh Class Interface discussion <==
 --> Representation 1
