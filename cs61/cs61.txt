@@ -1,3 +1,113 @@
+11/18: 
+Goals for the day: 
+1) Finish shell programming
+2) Network and server programming
+
+Review and Motivation: waittimeout.c
+Disadvantage of running loop to wait for child process to exit. The code has bad utilization because it uses polling. 
+
+==> Utilization: Fraction of some resource devoted to useful work -- a number
+	between 0 and 1 -- bigger is better 
+	: Who decides what is useful? 
+	: From the kernel's perspective, what is useful and what is not useful? 
+		Useful work is when a process is running -- the kernel's goal is to run
+		processes. A kernel does not look into a process to determine whether 
+		useful or useless work is being done.
+	: BUT...we know that we are just running a busy-loop...not very useful...
+		--> however...we are useing a busy-loop because we don't want race-conds
+	: waitblock.c 
+		--> Blocking model as opposed to polling model
+		--> we can use interupt functionality to implement blocking
+		--> This has very good utilization functionality -- there is less 
+			useless work being done
+	: BUT blocking code has a race condition...
+		--> Where is the race condition in the blocking code? 
+			: if the child exits before we call sleep, then the interrupt will
+				never happen, and parent will sleep for the whole sleep time
+				even though the child has exited
+
+==> Sleep-Wakeup Race: Wake up (stop blocking) when an event occurs...BUT we 
+	cannot detect the event & sleep atomically
+	: Atomic code executes indivisibly, without interruption
+	: Could we put interrupts "on ice" to block signals? how about SIGBLOCK, 
+		try running man SIGBLOCK to check out some of the functionality!
+	: we can unblock the signal right before we sleep? The race condition 
+		still exists, even if less likely this time
+	: Here is suggestion... what if we were to call select...or PSELECT
+	: PSELECT -> generic way to go to sleep for an amount of time, a SIGMASK 
+		parameter combines the checking for an event and going to sleep as an
+		atomic operation
+		--> this prevents the race condition that something happens between
+			checking for an interupt and going to sleep -- pselect makes sure
+			that this check and going to sleep is autonomous
+	: We fixed it! In waitblocksafe.c, using a pipe
+	: How can you get around that race condition? 
+		--> The solution to the sleep-wakeup race is to make sure you sleep
+			before you wakeup in every case
+
+==> How can you deal with interrupts in the shell?
+	: 1 set up foreground pipeline;
+	  2 if(shell got ctrl-C) kill fg pipeline; // wakeup equivalent
+	  3 // if the user pushes ctrl-C here there is a problem, a race-condition
+	  4 put fg pipeline in foreground;
+	  5 wait for foregroun pipeline; // sleep equivalent
+	: reorder lines 2 and 4 to solve this problem, the child will get ctrl-C
+
+==> General rule: signals are not reliable
+
+==> Zombie Processes: a child process that was never waited for and is still 
+	taking up resources; process died, parent not waited yet
+	: There is always a process that waits for a spawned process, even if the
+		parent process has died
+	: There is an uber process called init (has process id 1), and when the
+		parent of a child dies, the system reparents the child to init
+	: "pstree" command shows you a tree of all processes and their children on
+		the system
+	: shell --> a program whose job it is to run other programs
+
+==> Networking: one machine can use the resources of other machines
+	: division of computers into roles -> clients vs servers
+	: Message sequence diagram
+
+client(active party)		server			client
+request ------							 --	req
+			  ------------> 
+			  ------------	response<----
+		<-----
+
+	: service client and service servers
+	: What is the difference between servers and clients?
+	: An idea of messages between channels is maybe well represented by a pipe?
+		--> however in this case we need a file descriptor that represents a 
+			future channel -- the system call we need is socket, and it creates
+			an edgepoint for communication -- it's a network file descriptor
+	: socket creates an endpoint and connect binds them together
+
+client 		server
+socket()	socket() -- well known endpoint
+
+connect()--> 
+	: Three step process on client side: 
+		1.) look up address, 
+		2.) create a socket, 
+		3.) connect
+	: Server side: 
+		1.) Create socket and set up options on that socket
+		2.) Bind socket to a port
+		3.) listen for new connections
+	: We do not use listening sockets for connections, accept() solves the race
+		condition problem that might arise
+		--> accept() takes in a listening file descriptor and returns a new
+			file descriptor for the connection -- the connected socket is then
+			bound to the client
+	: walk through of serviceserver-01.c
+		--> it's bad because it can only talk to one client at a time
+
+==> Denial of Service Attack: one user of a service can prevent anyone else
+	from using a service -- attacker isn't gaining things directly, but prevent
+	other people from getting services
+	: Next time -- we will fix it! 
+
 10/21: 
 ==> Caller Saved Registers: callee can modify without saving or restoring
 	: garbage at the entrance of the function
