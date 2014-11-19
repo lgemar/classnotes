@@ -1,3 +1,31 @@
+11/19: 
+==> Review Session <==
+==> Big Ideas
+	==> Separating Data Structures from algorithms
+		: Graph separated from mass_spring
+		: Mesh separated from shallow_water
+	==> Integrating with External Libraries
+		: Use of MTL to create matrices
+		: consider using the Boost ODE INT functionality
+==> Using virtual for interfaces: iterator adaptor pattern
+	: // implementing virtual interface
+	: struct MyObj {
+		virtual void doStuff() = 0; // this is slow do to dispatch
+	  }
+	: // the alternative to this - the iterator adaptor
+	: template <Derived>
+	  struct MyObj {
+		// Curiously occuring template pattern
+		// We've defined an interface that our derived class should implement
+	  	void doStuff() { static_cast<Derived&>(*this).doStuff();
+		void doMore() { ... do Stuff(); }
+	  }
+==> What language should I choose? 
+	1 Which language is I more comfortable with? 
+	2 What libraries already exist the solve the problem you're handing me?
+	3 How fast do you need it to run? Is it a one time thing? 
+		--> If this code is going to be useful down the road, and it needs to
+			be efficient, then use c++
 11/17:
 ==> Observer Pattern <==
 class Viewer {
