@@ -1,3 +1,90 @@
+12/1: 
+==> Administrivia <== 
+	: Dec 5th - 8th : Teams Trade code
+	: Dec 11th? Write-up is finished
+==> Iterators allow a lot of separation to happen between algorithms
+	and data structures
+==> Cool features of C++11 code
+	: extensions like "auto", and "decltype"
+	: lambda functions
+	: variatic templates
+	: constexpr functions
+	: Concepts -> kind of like an interface -> REJECTED
+		--> interface for template arguments
+		--> concepts are very hard to enforce, you need to check to
+			make sure template args 
+		--> IN SPECIFICATION: 
+			: * @tparam
+			: * concept Iterator {
+				void op++;
+				T op*;
+				}
+			: Could have something like 
+			  template <class Iter, class T>
+			  requires Iterator<Iter, T>
+			  Iter find(Iter, Iter, T)
+==> How lambda functions saved c++
+	: The Force concept
+	  concept Force {
+		Point op()(Node n, double t) const;
+	  };
+	: When implementing a force we did something like this
+	  struct MyForce {
+		Blah my_members_;
+	  	Point operator()(Node n, double t) { ... }
+	  };
+	: Quickie way of making a force
+	  MyForce make_my_force( ... ) {
+	  	...
+	  }
+	: Much faster way of doing the creation of function objs! 
+	    double dt = 0.5;
+		/** The equal allows us to reach outside args to grab 
+		 * environment variables 
+		 * Return type is not stated
+		 */
+	    auto myforce = [=](Node n, double t) {
+	  					 return Point(dt, 0, 0);
+	                     };
+	  : this is known as a closure! We capture environment
+	  	variables and use them when applying the function
+	: For example! 
+	  auto metaforce = [&](Node n, double t) {
+	  	return myforce(n, t);
+	  }
+	  Point p = metaforce(n, t);
+	: Go to the Wikipedia article on c++11!!!!!
+==> C++14 Came out this year! gcc-4.9 implements all of it
+	: Template lambdas
+	: return type deduction
+	: fixes some of the bugs of c++11
+==> A situation in which lambda functions are not as good
+	: This is more powerful that c++11 lambda functions because
+	  of the template parameter available in this context
+	template <T>
+	struct add {
+		T operator()(T a, T b) const {
+			return a + b;
+		}
+	};
+	: In c++14 we can now write something like...
+	  auto add = [](auto a, auto b) {
+	  				return a + b;
+	    		 }
+==> C++17
+	: Concepts
+	: Parallism / Concurrency
+	: Ranges
+	  @pre Iterator range [a, b) is valid
+	  OIter copy(IIter, IIter, OIter)
+	: We enforce an invariant by making a class that enforces
+	  the invariant!
+	: We can wrap this concept and enforce the invariant by
+	  making a "Range" class that contains a pair of iterators
+	  class Range {
+	  	Iter first, last;
+	  };
+	  vector<int> blah = other | sort | unique;
 11/19: 
 ==> Review Session <==
 ==> Big Ideas
