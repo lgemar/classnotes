@@ -1,3 +1,26 @@
+12/3: 
+==> Design Ideas <==
+	: Efficiency => C++ parallelism
+	: Reliability => Specifications
+	: Maintainability => Programming / LSP by contract
+		--> Separation of Abstract data type and algorithms
+		--> Statement of invariants
+	: Remember when Cris spelt guard gaurd? hahahahaha
+	: Usability => Specs / Documentation
+
+==> Design Patterns
+	: Proxy -> Suggorate for an abstract value / control
+		--> Nodes and Edges
+	: Iterator -> abstract position in a collection of objects
+	: Adaptor Pattern
+		--> Transform iterator, filter iterator
+	: Generic Programming / Template programming -> abstraction 
+		over an algorithm
+		--> bottom-up programming
+	: Inheritance -> When it should be used and why!
+		--> abstract interfaces and specialized types
+		--> top-down programming
+	: Observer pattern -> allows state communication w/out coupling
 12/1: 
 ==> Administrivia <== 
 	: Dec 5th - 8th : Teams Trade code
